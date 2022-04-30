@@ -1,63 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Form, Grid, Message, Segment } from 'semantic-ui-react';
-import Loader from '../components/Loader';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Button, Form, Grid, Segment } from 'semantic-ui-react'
+import { getWeb3, deployContract } from '../web3'
 
 function RiderForm() {
-  let location = useLocation();
-  const [pickup, setPickup] = useState('');
-  const [destination, setDestination] = useState('');
-  let history = useNavigate();
-  const dispatch = useDispatch();
-  const redirect = location.search ? location.search.split('=')[1] : '/';
-  const userLogin = useSelector((state) => state.userLogin);
-  const { error, loading, userInfo } = userLogin;
+  const [pickup, setPickup] = useState('')
+  const [destination, setDestination] = useState('')
+  let history = useNavigate()
 
-  useEffect(() => {
-    if (userInfo) {
-      history(redirect);
-    }
-  }, [history, userInfo, redirect]);
-  const submitHandler = (e) => {
-    e.preventDefault();
-    history('/bids');
-    // dispatch(showBids(pickup, destination));
-    // show all available bids
-  };
+  const submitHandler = async (e) => {
+    e.preventDefault()
+
+    const accounts = await getWeb3().eth.getAccounts()
+
+    const contract = await deployContract(accounts[0], 1, 1, 2, 2)
+    console.log(contract)
+
+    history('/bids')
+  }
   return (
-    <>
-      {error && <Message negative>{error}</Message>}
-      <Grid
-        textAlign='center'
-        style={{ height: '100vh' }}
-        verticalAlign='middle'
-      >
-        <Grid.Column style={{ maxWidth: 450 }}>
-          {loading && <Loader />}
-          <Form size='large' onSubmit={submitHandler}>
-            <Segment stacked>
-              <Form.Input
-                fluid
-                icon='location arrow'
-                iconPosition='left'
-                placeholder='Enter pickup location'
-              />
-              <Form.Input
-                fluid
-                icon='location arrow'
-                iconPosition='left'
-                placeholder='Enter destination'
-              />
-              <Button color='teal' fluid size='large'>
-                Request Now
-              </Button>
-            </Segment>
-          </Form>
-        </Grid.Column>
-      </Grid>
-    </>
-  );
+    <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
+      <Grid.Column style={{ maxWidth: 450 }}>
+        <Form size="large" onSubmit={submitHandler}>
+          <Segment stacked>
+            <Form.Input fluid icon="location arrow" iconPosition="left" placeholder="Enter pickup location" />
+            <Form.Input fluid icon="location arrow" iconPosition="left" placeholder="Enter destination" />
+            <Button type="submit" color="teal" fluid size="large">
+              Request Now
+            </Button>
+          </Segment>
+        </Form>
+      </Grid.Column>
+    </Grid>
+  )
 }
 
-export default RiderForm;
+export default RiderForm

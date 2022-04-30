@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Rating } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux';
-import { raiseBid } from '../store/actions/bidActions';
+// import { raiseBid } from '../store/actions/bidActions';
 
 function Ride({ ride }) {
   const dispatch = useDispatch();

@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Rating } from 'semantic-ui-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { acceptBid } from '../store/actions/bidActions';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { acceptBid } from '../store/actions/bidActions';
 
 function Bid({ bid }) {
-  const dispatch = useDispatch();
-  const [message, setMessage] = useState('');
+  // const dispatch = useDispatch();
+  // const [message, setMessage] = useState('');
   
   function handleSubmit(e) {
     console.log('Ride');
