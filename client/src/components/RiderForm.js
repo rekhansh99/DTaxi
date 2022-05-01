@@ -12,8 +12,7 @@ function RiderForm() {
     e.preventDefault()
 
     const contract = getDTaxiContract()
-    const receipt = await contract.methods.requestRide(1, 1, 2, 2).send()
-    // console.log(receipt)
+    const receipt = await contract.methods.requestRide(1, 2, 3, 4).send()
     setRide(receipt.events.RideRequested.returnValues[0])
 
     history('/bids')

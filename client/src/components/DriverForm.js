@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 // import { useDispatch, useSelector } from 'react-redux';
-// import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Grid, Segment } from 'semantic-ui-react'
 
 function DriverForm() {
   const [license, setLicense] = useState('')
   const [vehicleNo, setVehicleNo] = useState('')
+  let history = useNavigate()
 
   const submitHandler = (e) => {
     e.preventDefault()
+    history('/options')
     //dispatch(registerAsDriver(license, vehicleNo));
   }
   return (
