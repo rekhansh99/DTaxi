@@ -1,8 +1,10 @@
 import Web3 from 'web3'
+import DTaxiContract from './contracts/DTaxi.json'
 import RideContract from './contracts/Ride.json'
 
 let web3 = null
-let contract = null
+let dtaxi = null
+let ride = null
 
 export const initWeb3 = () => new Promise((resolve, reject) => {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
@@ -40,25 +42,32 @@ export const getWeb3 = () => {
   throw new Error('Web3 is not initialized.')
 }
 
-export const deployContract = async (account, source_long, source_lat, dest_long, dest_lat) => {
-  contract = new web3.eth.Contract(RideContract.abi)
-  const deployedContract = await contract
-    .deploy({
-      data: RideContract.bytecode,
-      arguments: [source_long, source_lat, dest_long, dest_lat]
-    })
-    .send({
-      from: account,
-      gas: 1500000,
-      gasPrice: '30000000000000'
-    })
-  contract = deployedContract
-  return contract
+export const initDTaxiContract = async (account) => {
+  const networkId = await web3.eth.net.getId()
+  dtaxi = new web3.eth.Contract(DTaxiContract.abi, DTaxiContract.networks[networkId].address, {
+    from: account,
+    gas: 1500000,
+    gasPrice: '3000000000000'
+  })
+  return dtaxi
 }
 
-export const getContract = () => {
-  if (contract)
-    return contract
+export const getDTaxiContract = () => {
+  if (dtaxi)
+    return dtaxi
 
   throw new Error('Contract is not initialized.')
+}
+
+export const setRide = (rideContractAddress) => {
+  ride = new web3.eth.Contract(RideContract.abi, rideContractAddress, {
+    gas: 1500000,
+    gasPrice: '3000000000000'
+  })
+}
+export const getRide = () => {
+  if (ride)
+    return ride
+
+  throw new Error('Ride is not initialized.')
 }
