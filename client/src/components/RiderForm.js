@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Grid, Segment } from 'semantic-ui-react'
-import { getWeb3, deployContract } from '../web3'
+import { getDTaxiContract, setRide } from '../web3'
 
 function RiderForm() {
   const [pickup, setPickup] = useState('')
@@ -11,10 +11,10 @@ function RiderForm() {
   const submitHandler = async (e) => {
     e.preventDefault()
 
-    const accounts = await getWeb3().eth.getAccounts()
-
-    const contract = await deployContract(accounts[0], 1, 1, 2, 2)
-    console.log(contract)
+    const contract = getDTaxiContract()
+    const receipt = await contract.methods.requestRide(1, 1, 2, 2).send()
+    // console.log(receipt)
+    setRide(receipt.events.RideRequested.returnValues[0])
 
     history('/bids')
   }

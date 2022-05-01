@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { initWeb3 } from './web3'
+import { initDTaxiContract, initWeb3 } from './web3'
 
 import Booking from './screens/BookingScreen'
 import Bids from './screens/BidScreen'
@@ -20,8 +20,11 @@ class App extends Component {
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts()
 
+      // Initialize contract once web3 and user accounts found.
+      const contract = await initDTaxiContract(accounts[0])
+
       // Set web3, accounts, and contract to the state
-      this.setState({ web3, account: accounts[0]})
+      this.setState({ web3, account: accounts[0], contract })
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(`Failed to load web3, accounts, or contract. Check console for details.`)

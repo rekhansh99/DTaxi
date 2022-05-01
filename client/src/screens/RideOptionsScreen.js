@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import rides from '../ridesRaw'
 import { Row, Col } from 'react-bootstrap'
-import { getContract, getWeb3 } from '../web3'
+import { getDTaxiContract, getWeb3 } from '../web3'
 import Ride from '../components/Ride'
 import './centerAlign.css'
 
 function RideOptionsScreen() {
   const [rideRequests, setRideRequests] = useState([])
-  const contract = getContract()
-  const web3 = getWeb3()
+  const contract = getDTaxiContract()
 
-  web3.eth.subscribe()
+  contract.events.RideRequested({}, (error, event) => {
+    // TODO
+  })
 
   return (
     <>

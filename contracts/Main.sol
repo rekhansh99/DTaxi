@@ -18,26 +18,26 @@ enum RideStatus {
     COMPLETED
 }
 
-// contract DTaxi {
-//     address public owner;
+contract DTaxi {
+    address public owner;
 
-//     constructor() {
-//         owner = msg.sender;
-//     }
+    constructor() {
+        owner = msg.sender;
+    }
 
-//     mapping(address => Ride) public rides;
+    mapping(address => Ride) public rides;
 
-//     event RideRequested(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat);
+    event RideRequested(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat);
 
-//     function requestRide(uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) public {
-//         require(_source_long != _dest_long || _source_lat != _dest_lat, "Source and destination cannot be the same");
+    function requestRide(uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) public {
+        require(_source_long != _dest_long || _source_lat != _dest_lat, "Source and destination cannot be the same");
 
-//         Ride storage ride = new Ride(msg.sender, _source_long, _source_lat, _dest_long, _dest_lat);
-//         rides[address(ride)] = ride;
+        Ride ride = new Ride(msg.sender, _source_long, _source_lat, _dest_long, _dest_lat);
+        rides[address(ride)] = ride;
 
-//         emit RideRequested(address(ride), _source_long, _source_lat, _dest_long, _dest_lat);
-//     }
-// }
+        emit RideRequested(address(ride), _source_long, _source_lat, _dest_long, _dest_lat);
+    }
+}
 
 contract Ride {
     address rider;
@@ -49,19 +49,16 @@ contract Ride {
     mapping(address => Driver) drivers;
     address[] driverAddresses;
 
-    event RideRequested(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat);
     event BidReceived(address _driver, uint256 _amount);
     event BidAccepted(address _driver);
 
-    constructor(uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) {
-        rider = msg.sender;
+    constructor(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) {
+        rider = _rider;
 
         source = Location(_source_long, _source_lat);
         dest = Location(_dest_long, _dest_lat);
 
         status = RideStatus.REQUESTED;
-
-        emit RideRequested(rider, _source_long, _source_lat, _dest_long, _dest_lat);
     }
 
     function makeBid(uint256 _amount) public {
