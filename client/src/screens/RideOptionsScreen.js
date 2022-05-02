@@ -1,35 +1,40 @@
 import React, { useState, useEffect } from 'react'
-import rides from '../ridesRaw'
 import { Row, Col } from 'react-bootstrap'
 import { getDTaxiContract } from '../web3'
 import Ride from '../components/Ride'
 import './centerAlign.css'
 
-let rideRequests = [];
+
 
 function RideOptionsScreen() {
+
   
+  const [rideRequests,setRideRequests] = useState({});
   const contract = getDTaxiContract()
-  // const allEvents = contract.getPastEvents('RideRequested',{fromBlock:0},(error,events) => {
-  //     console.log(events)
-  //     setRideRequests(events)
-  //   })
-  contract.events.RideRequested({fromBlock: 0, toBlock: 'latest' }, (error, event) => {
-    
-    rideRequests.push(event);
-    
+  contract.events.RideRequested({}, (error, event) => {
+    let key = Object.keys(rideRequests).length
+    setRideRequests({...rideRequests, [key]: event});
   })
+  
+  
   console.log(rideRequests)
+
   return (
     <>
-    
-      {rides.map((ride) => (
+      {Object.entries(rideRequests).map((ride) => (
+        <Row key={ride[0]} className="test">
+          <Col md={3}>
+            <Ride ride={ride[1]} />
+          </Col>
+        </Row>
+      ))}
+      {/* {rides.map((ride) => (
         <Row key={ride.id} className="test">
           <Col md={3}>
             <Ride ride={ride} />
           </Col>
         </Row>
-      ))}
+      ))} */}
     </>
   )
 }

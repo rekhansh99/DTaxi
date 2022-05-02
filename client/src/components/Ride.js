@@ -1,53 +1,66 @@
 import React, {useState} from 'react';
 import { Card } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { Rating } from 'semantic-ui-react'
-import { useDispatch, useSelector } from 'react-redux';
-// import { raiseBid } from '../store/actions/bidActions';
+import { Rating, Button, Form, Segment } from 'semantic-ui-react'
+import { setRide, getRide, getWeb3 } from '../web3'
 
 function Ride({ ride }) {
-  const dispatch = useDispatch();
-  const [message, setMessage] = useState('');
-  
-  /*function handleSubmit(e) {
-    console.log('Ride');
-    
-    e.preventDefault();
-    dispatch(raiseBid(bid.fare, walletAddress)).then((status) => {
-      if(status === 200)
-      {
-        navigate(`/rideConfirmed/${bid.id}`)
-      }
-      else{
-        setMessage('An error occurred. Please try again.');
-      }
-    })
-     
-  };*/
+  const [show,setShow] = useState(false);
+  const [bidMade, setBidMade] = useState(false);
+  const [bidAmount, setBidAmount] = useState(0);
+  console.log(ride)
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    const web3 = await getWeb3()
+    // Use web3 to get the user's accounts.
+    const accounts = await web3.eth.getAccounts()
+    setRide(ride.returnValues[0])
+    const RideContract = getRide()
+    const bid = await RideContract.methods.makeBid(bidAmount).send({from:accounts[0]})
+    console.log(bid)
+    setShow(false)
+    setBidMade(true);
+  }
+  if(bidMade)
+  {
+    const RideContract = getRide()
+    RideContract.events.BidAccepted({}, (error, event) => {
+      console.log(event)
+    console.log("bid accepted for ride", ride.address)
+  })}
+
   return (
     <Card
       style={{ flex: 1, backgroundColor: '#48a897' }}
       text='light'
       className='my-3 p-3 rounded'
-    >
-      
+    > 
       <Card.Body>
-        <Card.Text as='h3'> Pickup distance: {ride.pickup_distance} </Card.Text>
+      <Card.Text as='h3'> Rider address: {ride.returnValues._rider} </Card.Text>
+        <Card.Text as='h3'> Pickup location: ({ride.returnValues._source_lat},{ride.returnValues._source_long}) </Card.Text>
         <Card.Text as='h3'>
           
-            Destination distance: {ride.destination_distance}
+            Destination distance: ({ride.returnValues._dest_lat},{ride.returnValues._dest_long})
           
         </Card.Text>
         <Card.Text as='h6'>
           <strong>
-            Rating: <Rating icon='star' defaultRating={5} maxRating={5} />
+            User Rating: <Rating icon='star' defaultRating={5} maxRating={5} />
           </strong>
         </Card.Text>
-        <Link to={`/ride/${ride.id}`} style={{ color: '#FFF' }}>
-          <Card.Text as='div'>
-            <div className='my-3'>Raise a bid</div>
-          </Card.Text>
-        </Link>
+        <Button onClick={() => setShow(true)}>
+          Make Bid 
+        </Button>
+        <Card.Text as='div'>
+        {show && <Form size="large" >
+          <Segment stacked>
+            <Form.Input fluid icon="dollar" iconPosition="left" onChange = {(e) => setBidAmount(e.target.value)} placeholder="Enter bid amount" />
+            <Button type="submit" color="teal" fluid onClick={submitHandler}>
+              Submit
+            </Button>
+            <Button onClick={()=>{setShow(false)}}>Close</Button>
+          </Segment>
+        </Form>}
+        </Card.Text>
       </Card.Body>
     </Card>
   );

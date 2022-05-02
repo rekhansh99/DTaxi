@@ -62,7 +62,8 @@ contract Ride {
     }
 
     function makeBid(uint256 _amount) public {
-        require(msg.sender != rider, "Rider can't be driver");
+        // require(msg.sender != rider, "Rider can't be driver");
+        require(_amount > 0, "Bid amount must be greater than zero");
 
         Driver storage d = drivers[msg.sender];
         d.walletAddress = payable(msg.sender);
