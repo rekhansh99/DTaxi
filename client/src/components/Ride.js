@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom'
 import { Card } from 'react-bootstrap';
 import { Rating, Button, Form, Segment } from 'semantic-ui-react'
 import { setRide, getRide, getWeb3 } from '../web3'
@@ -7,25 +8,27 @@ function Ride({ ride }) {
   const [show,setShow] = useState(false);
   const [bidMade, setBidMade] = useState(false);
   const [bidAmount, setBidAmount] = useState(0);
-  console.log(ride)
+
+  let history = useNavigate()
+  
   const submitHandler = async (e) => {
     e.preventDefault()
     const web3 = await getWeb3()
-    // Use web3 to get the user's accounts.
     const accounts = await web3.eth.getAccounts()
     setRide(ride.returnValues[0])
     const RideContract = getRide()
     const bid = await RideContract.methods.makeBid(bidAmount).send({from:accounts[0]})
-    console.log(bid)
+    
     setShow(false)
     setBidMade(true);
   }
+
   if(bidMade)
   {
     const RideContract = getRide()
     RideContract.events.BidAccepted({}, (error, event) => {
       console.log(event)
-    console.log("bid accepted for ride", ride.address)
+      history(`/ongoingRide/${event.address}`)
   })}
 
   return (
@@ -36,10 +39,10 @@ function Ride({ ride }) {
     > 
       <Card.Body>
       <Card.Text as='h3'> Rider address: {ride.returnValues._rider} </Card.Text>
-        <Card.Text as='h3'> Pickup location: ({ride.returnValues._source_lat},{ride.returnValues._source_long}) </Card.Text>
+        <Card.Text as='h3'> Pickup: ({ride.returnValues._source_lat},{ride.returnValues._source_long}) </Card.Text>
         <Card.Text as='h3'>
           
-            Destination distance: ({ride.returnValues._dest_lat},{ride.returnValues._dest_long})
+            Destination: ({ride.returnValues._dest_lat},{ride.returnValues._dest_long})
           
         </Card.Text>
         <Card.Text as='h6'>
