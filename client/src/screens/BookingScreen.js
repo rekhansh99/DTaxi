@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid } from 'semantic-ui-react'
-import RiderForm from '../components/RiderForm'
-import DriverForm from '../components/DriverForm'
+import RiderForm from './RiderForm'
+import DriverForm from './DriverForm'
 import { Tabs, Tab } from 'react-bootstrap'
 
 function BookingScreen() {

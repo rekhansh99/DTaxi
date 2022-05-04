@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { initDTaxiContract, initWeb3 } from './web3'
 
+import Home from './screens/Home'
 import Booking from './screens/BookingScreen'
 import Bids from './screens/BidScreen'
 import RideOptions from './screens/RideOptionsScreen'
 import RideConfirmed from './screens/RideScreen'
 
 import './App.css'
+import RiderForm from './screens/RiderForm'
+import DriverForm from './screens/DriverForm'
 
 class App extends Component {
   state = { web3: null, account: null }
@@ -46,9 +49,12 @@ class App extends Component {
     }
 
     return (
+
       <Router>
         <Routes>
-          <Route exact path="/booking" element={<Booking />} />
+          <Route exact path="/" element={<Home />}/>
+          <Route exact path="/ride" element={<RiderForm />} />
+          <Route exact path="/drive" element={<DriverForm />} />
           <Route exact path="/bids" element={<Bids />} />
           <Route exact path="/options" element={<RideOptions />} />
           <Route exact path="/ongoingRide/:address" element={<RideConfirmed />} />
