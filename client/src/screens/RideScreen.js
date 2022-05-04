@@ -1,11 +1,13 @@
 import React from 'react'
 import { getRide } from '../web3'
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
 import { Button } from 'semantic-ui-react';
 
 const RideScreen = () => {
 
+
+    const navigate = useNavigate();
     const ride = getRide()
     let loc = useLocation()
     const handleStartRide = async () => {
@@ -40,8 +42,10 @@ const RideScreen = () => {
 
         console.log(event)
         console.log("Ride ended")
-        const data = await ride.methods.withdraw().send()
-        console.log(data)
+        // const data = await ride.methods.withdraw().send()
+        // console.log(data)
+        alert("Your ride has ended!")
+        navigate('/')
     })
 
     const handleCancelRide = async () => {
@@ -56,7 +60,7 @@ const RideScreen = () => {
             console.log(error)
             return
         }
-
+        // TODO : show feedback form
         console.log(event)
         console.log("Ride cancelled")
     })
@@ -64,7 +68,7 @@ const RideScreen = () => {
     return (
         <Container>
             <Row>
-                <h1>Placeholder for ride tracking</h1>
+                <h1>Placeholder for ride tracking. {loc.state.source}, {loc.state.destination}</h1>
             </Row>
             <Row>
                 <Col md={8}>
@@ -91,7 +95,7 @@ const RideScreen = () => {
             </Row>
             <Row>
                 <Col md={6}>
-                    Driver's name:
+                    Distance: {loc.state.distance}
                 </Col>
                 <Col md={6}>
 
