@@ -36,7 +36,7 @@ class App extends Component {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>
     }
-    
+
     if (!this.state.account) {
       return (
         <div>
@@ -44,7 +44,7 @@ class App extends Component {
         </div>
       )
     }
-    
+
     return (
       <Router>
         <Routes>
