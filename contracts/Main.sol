@@ -2,12 +2,13 @@
 pragma solidity >=0.6.0 <0.9.0;
 
 struct Location {
+    string name;
     uint32 long;
     uint32 lat;
 }
 
 struct Driver {
-    address payable walletAddress;
+    address walletAddress;
     uint256 bidAmount;
 }
 
@@ -15,6 +16,7 @@ enum RideStatus {
     REQUESTED,
     ACCEPTED,
     REJECTED,
+    ONGOING,
     COMPLETED
 }
 
@@ -25,38 +27,79 @@ contract DTaxi {
         owner = msg.sender;
     }
 
-    mapping(address => Ride) public rides;
+    event RideRequested(
+        address _rider,
+        string _source_name,
+        uint32 _source_long,
+        uint32 _source_lat,
+        string _dest_name,
+        uint32 _dest_long,
+        uint32 _dest_lat
+    );
 
-    event RideRequested(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat);
+    function requestRide(
+        string calldata _source_name,
+        uint32 _source_long,
+        uint32 _source_lat,
+        string calldata _dest_name,
+        uint32 _dest_long,
+        uint32 _dest_lat
+    ) public {
+        require(
+            _source_long != _dest_long || _source_lat != _dest_lat,
+            "Source and destination cannot be the same"
+        );
 
-    function requestRide(uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) public {
-        require(_source_long != _dest_long || _source_lat != _dest_lat, "Source and destination cannot be the same");
+        Ride ride = new Ride(
+            msg.sender,
+            _source_name,
+            _source_long,
+            _source_lat,
+            _dest_name,
+            _dest_long,
+            _dest_lat
+        );
 
-        Ride ride = new Ride(msg.sender, _source_long, _source_lat, _dest_long, _dest_lat);
-        rides[address(ride)] = ride;
-
-        emit RideRequested(address(ride), _source_long, _source_lat, _dest_long, _dest_lat);
+        emit RideRequested(
+            address(ride),
+            _source_name,
+            _source_long,
+            _source_lat,
+            _dest_name,
+            _dest_long,
+            _dest_lat
+        );
     }
 }
 
 contract Ride {
-    address rider;
+    address public rider;
     Location public source;
     Location public dest;
-    RideStatus status;
-    Driver driver;
+    RideStatus public status;
+    Driver public driver;
 
     mapping(address => Driver) drivers;
-    address[] driverAddresses;
 
     event BidReceived(address _driver, uint256 _amount);
     event BidAccepted(address _driver);
+    event RideStarted();
+    event RideCompleted();
+    event RideCancelled();
 
-    constructor(address _rider, uint32 _source_long, uint32 _source_lat, uint32 _dest_long, uint32 _dest_lat) {
+    constructor(
+        address _rider,
+        string memory _source_name,
+        uint32 _source_long,
+        uint32 _source_lat,
+        string memory _dest_name,
+        uint32 _dest_long,
+        uint32 _dest_lat
+    ) {
         rider = _rider;
 
-        source = Location(_source_long, _source_lat);
-        dest = Location(_dest_long, _dest_lat);
+        source = Location(_source_name, _source_long, _source_lat);
+        dest = Location(_dest_name, _dest_long, _dest_lat);
 
         status = RideStatus.REQUESTED;
     }
@@ -64,17 +107,25 @@ contract Ride {
     function makeBid(uint256 _amount) public {
         // require(msg.sender != rider, "Rider can't be driver");
         require(_amount > 0, "Bid amount must be greater than zero");
+        require(
+            status == RideStatus.REQUESTED,
+            "Ride is not in requested state"
+        );
+        require(
+            drivers[msg.sender].walletAddress == address(0),
+            "Driver already has a bid"
+        );
 
         Driver storage d = drivers[msg.sender];
-        d.walletAddress = payable(msg.sender);
+        d.walletAddress = msg.sender;
         d.bidAmount = _amount;
-        driverAddresses.push(msg.sender);
 
         emit BidReceived(msg.sender, _amount);
     }
 
     function acceptBid(address _driver) public {
         require(msg.sender == rider);
+        require(status == RideStatus.REQUESTED);
         require(drivers[_driver].walletAddress == _driver, "Wrong Driver!");
 
         driver = drivers[_driver];
@@ -83,7 +134,51 @@ contract Ride {
         emit BidAccepted(_driver);
     }
 
-    function startRide() public {}
+    function startRide() public payable {
+        require(msg.sender == rider);
+        require(
+            status == RideStatus.ACCEPTED,
+            "Ride must be accepted before starting"
+        );
+        require(
+            msg.value == driver.bidAmount,
+            "Ride amount must match bid amount"
+        );
 
-    function endRide() public {}
+        status = RideStatus.ONGOING;
+        emit RideStarted();
+    }
+
+    function endRide() public {
+        require(msg.sender == rider);
+        require(
+            status == RideStatus.ONGOING,
+            "Ride must be ongoing before ending"
+        );
+
+        status = RideStatus.COMPLETED;
+        emit RideCompleted();
+    }
+
+    function withdraw() public {
+        require(msg.sender == driver.walletAddress);
+        require(
+            status == RideStatus.COMPLETED,
+            "Ride must be completed before withdrawing"
+        );
+
+        payable(msg.sender).transfer(driver.bidAmount);
+    }
+
+    function cancelRide() public {
+        require(msg.sender == rider);
+        require(
+            status == RideStatus.REQUESTED,
+            "Ride must be in requested state"
+        );
+
+        status = RideStatus.REJECTED;
+        emit RideCancelled();
+        selfdestruct(payable(rider));
+    }
 }

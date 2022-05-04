@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { getDTaxiContract } from '../web3'
 import Ride from '../components/Ride'
 import './centerAlign.css'
 
-
-
 function RideOptionsScreen() {
-
-  
-  const [rideRequests,setRideRequests] = useState({});
+  const [rideRequests, setRideRequests] = useState({})
   const contract = getDTaxiContract()
   contract.events.RideRequested({}, (error, event) => {
+    if (error) {
+      console.log(error)
+      return
+    }
+
     let key = Object.keys(rideRequests).length
-    setRideRequests({...rideRequests, [key]: event});
+    setRideRequests({ ...rideRequests, [key]: event })
   })
-  
-  
+
   console.log(rideRequests)
 
   return (

@@ -1,17 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import bids from '../bidsRaw';
-import { Row, Container, Col } from 'react-bootstrap';
-import Bid from '../components/Bid';
-import { getRide } from '../web3';
-import './centerAlign.css';
+import React, { useState } from 'react'
+import { Row, Container, Col } from 'react-bootstrap'
+import { getDoc, doc } from 'firebase/firestore/lite'
+import Bid from '../components/Bid'
+import { getRide } from '../web3'
+import { db } from '../firebase'
+import './centerAlign.css'
 
 function BidScreen() {
-  const [bids,setBids] = useState({});
-  const ride =  getRide()
-  ride.events.BidReceived({},(error,event)=>{
+  const [bids, setBids] = useState({})
+  const ride = getRide()
+  ride.events.BidReceived({}, async (error, event) => {
+    if (error) {
+      console.log(error)
+      return
+    }
+
     console.log(event)
+    const driverSnap = await getDoc(doc(db, 'drivers', event.returnValues._driver))
+    if (!driverSnap.exists()) {
+      console.log('Driver does not exist')
+      return
+    }
+
+    const driver = driverSnap.data()
+    console.log(driver)
     let key = Object.keys(bids).length
-    setBids({...bids, [key]: event});
+    setBids({
+      ...bids,
+      [key]: {
+        name: driver.name,
+        vehicle_no: driver.vehicle_no,
+        bidAmount: event.returnValues._amount,
+        rating: driver.rating,
+        walletAddress: driver.walletAddress
+      }
+    })
   })
 
   return (
@@ -19,7 +42,7 @@ function BidScreen() {
       {Object.entries(bids).map((bid) => (
         <Row key={bid[0]} className="test">
           <Col md={3}>
-            <Bid bid={bid[1]} />
+            <Bid driver={bid[1]} />
           </Col>
         </Row>
       ))}
@@ -31,6 +54,6 @@ function BidScreen() {
         </Row>
       ))} */}
     </Container>
-  );
+  )
 }
-export default BidScreen;
+export default BidScreen
