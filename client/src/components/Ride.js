@@ -30,7 +30,7 @@ function Ride({ ride }) {
       }
 
       console.log(event)
-      history(`/ongoingRide/${event.address}`)
+      history(`/ongoingRide/${event.address}`,{state:{bidAmount:bidAmount}})
     })
   }
 

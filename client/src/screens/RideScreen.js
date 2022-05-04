@@ -1,7 +1,65 @@
 import React from 'react'
+import { getRide } from '../web3'
+import { useLocation } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap'
+import { Button } from 'semantic-ui-react';
 
 const RideScreen = () => {
+
+    const ride = getRide()
+    let loc = useLocation()
+    const handleStartRide = async () => {
+       const data= await ride.methods.startRide().send({value:loc.state.bidAmount})
+        console.log("start request")
+        console.log(data)
+    }
+
+    ride.events.RideStarted({}, (error, event) => {
+        if (error)
+        {
+            console.log(error)
+            return
+        }
+
+        console.log(event)
+        console.log("Ride started")
+    })
+
+    const handleEndRide = async () => {
+       const data = await ride.methods.endRide().send()
+        console.log("end request")
+        console.log(data)
+    }
+
+    ride.events.RideCompleted({},async (error, event) => {
+        if (error)
+        {
+            console.log(error)
+            return
+        }
+
+        console.log(event)
+        console.log("Ride ended")
+        const data = await ride.methods.withdraw().send()
+        console.log(data)
+    })
+
+    const handleCancelRide = async () => {
+        const data = await ride.methods.cancelRide().send()
+        console.log("cancel request")
+        console.log(data)
+    }
+
+    ride.events.RideCancelled({}, (error, event) => {
+        if (error)
+        {
+            console.log(error)
+            return
+        }
+
+        console.log(event)
+        console.log("Ride cancelled")
+    })
 
     return (
         <Container>
@@ -45,6 +103,17 @@ const RideScreen = () => {
                 </Col>
                 <Col md={6}>
                     5 minutes
+                </Col>
+            </Row>
+            <Row>
+                <Col md={4}>
+                    <Button color="teal" fluid size="large" onClick = {handleStartRide}> Start Ride </Button>
+                </Col>
+                <Col md={4}>
+                    <Button color="teal" fluid size="large" onClick = {handleEndRide}> End Ride </Button>
+                </Col>
+                <Col md={4}>
+                    <Button color="teal" fluid size="large" onClick = {handleCancelRide}> Cancel Ride </Button>
                 </Col>
             </Row>
         </Container>

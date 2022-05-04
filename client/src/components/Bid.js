@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { getRide } from '../web3'
 
 function Bid({ driver }) {
-  const history = useNavigate()
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     const ride = getRide()
@@ -13,7 +13,7 @@ function Bid({ driver }) {
     console.log(ride)
     console.log(acceptedBid)
 
-    history(`/ongoingRide/${ride.options.address}`)
+    navigate(`/ongoingRide/${ride.options.address}`,{state:{bidAmount:driver.bidAmount}})
   }
 
   return (
@@ -42,35 +42,7 @@ function Bid({ driver }) {
         </Card.Text>
       </Card.Body>
     </Card>
-    // <Card
-    //   style={{ flex: 1, backgroundColor: '#48a897' }}
-    //   text='light'
-    //   width='50%'
-    //   className='my-3 p-3 rounded'
-    // >
-    //   <Card.Header as='h3' style={{ backgroundColor: '#abd6d0' }}>
-    //     Driver address: {bid.returnValues._driver}
-    //   </Card.Header>
-    //   <Card.Body>
-    //   <Card.Text as='h6'>
-    //       <strong>bid Address: {bid.address}</strong>
-    //     </Card.Text>
-    //     <Card.Text as='h6'>
-    //       <strong>Fare: {bid.returnValues._amount}</strong>
-    //     </Card.Text>
-    //     <Card.Text as='h6'>
-    //       <strong>
-    //         Rating:
-    //         <Rating icon='star' defaultRating={3} maxRating={5} />
-    //       </strong>
-    //     </Card.Text>
-
-    //       <Card.Text as='div'>
-    //         <Button onClick={submitHandler}>Choose</Button>
-    //       </Card.Text>
-
-    //   </Card.Body>
-    // </Card>
+    
   )
 }
 

@@ -51,7 +51,7 @@ class App extends Component {
           <Route exact path="/booking" element={<Booking />} />
           <Route exact path="/bids" element={<Bids />} />
           <Route exact path="/options" element={<RideOptions />} />
-          <Route exact path="/ongoingRide/:string" element={<RideConfirmed />} />
+          <Route exact path="/ongoingRide/:address" element={<RideConfirmed />} />
         </Routes>
       </Router>
     )

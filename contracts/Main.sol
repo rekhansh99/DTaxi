@@ -160,12 +160,12 @@ contract Ride {
         emit RideCompleted();
     }
 
-    function withdraw() public {
-        require(msg.sender == driver.walletAddress);
-        require(
-            status == RideStatus.COMPLETED,
-            "Ride must be completed before withdrawing"
-        );
+    function withdraw() public payable {
+    //    require(msg.sender == driver.walletAddress);
+        // require(
+        //     status == RideStatus.COMPLETED,
+        //     "Ride must be completed before withdrawing"
+        // );
 
         payable(msg.sender).transfer(driver.bidAmount);
     }
@@ -173,8 +173,8 @@ contract Ride {
     function cancelRide() public {
         require(msg.sender == rider);
         require(
-            status == RideStatus.REQUESTED,
-            "Ride must be in requested state"
+            status == RideStatus.ACCEPTED,
+            "Ride must be in accepted state"
         );
 
         status = RideStatus.REJECTED;

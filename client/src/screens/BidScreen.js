@@ -19,9 +19,27 @@ function BidScreen() {
     const driverSnap = await getDoc(doc(db, 'drivers', event.returnValues._driver))
     if (!driverSnap.exists()) {
       console.log('Driver does not exist')
-      return
+      const driver = {
+        name: 'XYZ',
+        vehicle_no: 'driver.vehicle_no',
+        bidAmount: event.returnValues._amount,
+        rating: 3,
+        walletAddress: event.returnValues._driver
+      }
+      let key = Object.keys(bids).length
+      setBids({
+        ...bids,
+        [key]: {
+          name: driver.name,
+          vehicle_no: driver.vehicle_no,
+          bidAmount: event.returnValues._amount,
+          rating: driver.rating,
+          walletAddress: driver.walletAddress
+        }
+      })
+    //  return
     }
-
+    else{
     const driver = driverSnap.data()
     console.log(driver)
     let key = Object.keys(bids).length
@@ -35,6 +53,7 @@ function BidScreen() {
         walletAddress: driver.walletAddress
       }
     })
+  }
   })
 
   return (
@@ -46,13 +65,6 @@ function BidScreen() {
           </Col>
         </Row>
       ))}
-      {/* {bids.map((bid) => (
-        <Row key={bid.id} className='test'>
-          <Col md={3}>
-            <Bid bid={bid} />
-          </Col>
-        </Row>
-      ))} */}
     </Container>
   )
 }
