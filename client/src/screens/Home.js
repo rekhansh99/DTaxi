@@ -2,20 +2,12 @@ import React from 'react'
 import './centerAlign.css'
 import { Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
-import background from '../background.jpg';
 import { Button, Grid} from 'semantic-ui-react'
 
 const Home = () => {
     const history = useNavigate()
     return (
-        <div
-            style={{
-                backgroundImage: `url(${background})`,
-                height: '100vh',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                    
-            }}>
+        <div className = 'bgImage'>
             <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 650}}>
             <Card className="text-center" style={{ width: '40rem', padding: '5%', borderRadius: '2%' }}>

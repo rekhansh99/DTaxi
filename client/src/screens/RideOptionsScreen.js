@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Row, Col } from 'react-bootstrap'
+import { Row, Col, Container, Card } from 'react-bootstrap'
 import { getDTaxiContract } from '../web3'
 import Ride from '../components/Ride'
+import Loader from '../components/Loader';
 import './centerAlign.css'
 
 function RideOptionsScreen() {
@@ -20,22 +21,35 @@ function RideOptionsScreen() {
   console.log(rideRequests)
 
   return (
-    <>
-      {Object.entries(rideRequests).map((ride) => (
-        <Row key={ride[0]} className="test">
-          <Col md={3}>
-            <Ride ride={ride[1]} />
-          </Col>
-        </Row>
-      ))}
-      {/* {rides.map((ride) => (
-        <Row key={ride.id} className="test">
-          <Col md={3}>
-            <Ride ride={ride} />
-          </Col>
-        </Row>
-      ))} */}
-    </>
+    <div className='bgImage'>
+      { Object.keys(rideRequests).length ?
+        <Container>
+          <Row>
+            <Col className='banner'>
+              <h1 style={{fontSize: '5rem'}}>
+                <i className='taxi icon' ></i> DTaxi
+              </h1>
+              <div className="d-grid gap-2">
+                  Ride Requests
+              </div>
+            </Col>
+            <Col>
+            {
+              Object.entries(rideRequests).map((ride) => (
+                <Row key={ride[0]} className="test"><Ride ride={ride[1]} /> </Row>
+              ))
+            }
+            </Col>
+          </Row>
+        </Container>
+        :<>
+          <h1 className='test verticalCenter' style={{fontSize: '3rem', color: 'white'}}>
+          <Loader />
+          Searching for rides...
+          </h1>
+        </>
+      }
+    </div>
   )
 }
 export default RideOptionsScreen

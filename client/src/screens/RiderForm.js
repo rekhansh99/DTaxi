@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Grid, Segment } from 'semantic-ui-react'
 import { getDTaxiContract, setRide } from '../web3'
-import background from '../background.jpg'
+import './centerAlign.css'
 
 function toSeconds(coordinate) {
   var absolute = Math.abs(coordinate)
@@ -54,12 +54,7 @@ function RiderForm() {
     history('/bids')
   }
   return (
-    <div
-      style={{
-          backgroundImage: `url(${background})`,
-          height: '100vh',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',}}>
+    <div className='bgImage'>
       <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 650 }}>
         <Form size="large" onSubmit={submitHandler}>
