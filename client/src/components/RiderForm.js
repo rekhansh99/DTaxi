@@ -4,24 +4,24 @@ import { Button, Form, Grid, Segment } from 'semantic-ui-react'
 import { getDTaxiContract, setRide } from '../web3'
 
 function toSeconds(coordinate) {
-  var absolute = Math.abs(coordinate)
-  var degrees = Math.floor(absolute)
-  var minutesNotTruncated = (absolute - degrees) * 60
-  var minutes = Math.floor(minutesNotTruncated)
-  var seconds = Math.floor((minutesNotTruncated - minutes) * 60)
+  const absolute = Math.abs(coordinate)
+  const degrees = Math.floor(absolute)
+  const minutesNotTruncated = (absolute - degrees) * 60
+  const minutes = Math.floor(minutesNotTruncated)
+  const seconds = Math.floor((minutesNotTruncated - minutes) * 60)
 
   return degrees * 3600 + minutes * 60 + seconds
 }
 
 function convertDMS(lat, lng) {
-  var latitude = toSeconds(lat)
-  var longitude = toSeconds(lng)
+  const latitude = toSeconds(lat)
+  const longitude = toSeconds(lng)
 
   return [latitude, longitude]
 }
 
 async function getCoordinates(loc) {
-  let coords = []
+  const coords = []
   const data = await (
     await fetch(`http://www.mapquestapi.com/geocoding/v1/address?key=G6WNiN78hofxPRgeQEs8T6IYKFZ0MDuY&location=${loc}`)
   ).json()
@@ -34,7 +34,7 @@ async function getCoordinates(loc) {
 function RiderForm() {
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
-  let history = useNavigate()
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     e.preventDefault()
@@ -49,9 +49,10 @@ function RiderForm() {
       .requestRide(pickup, source[0], source[1], destination, dest[0], dest[1])
       .send()
     console.log(receipt)
-    setRide(receipt.events.RideRequested.returnValues[0])
-    history('/bids')
+    setRide(receipt.events.RideRequested.returnValues._rider)
+    navigate('/bids')
   }
+
   return (
     <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
       <Grid.Column style={{ maxWidth: 450 }}>

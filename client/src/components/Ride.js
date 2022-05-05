@@ -2,50 +2,45 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 import { Rating, Button, Form, Segment } from 'semantic-ui-react'
-import { setRide, getRide } from '../web3'
+import { setRide, getRide, addListener } from '../web3'
 
 function Ride({ ride }) {
   const [show, setShow] = useState(false)
   const [bidMade, setBidMade] = useState(false)
   const [bidAmount, setBidAmount] = useState(0)
 
-  let history = useNavigate()
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     e.preventDefault()
-    setRide(ride.returnValues[0])
+    setRide(ride.address)
     const RideContract = getRide()
     await RideContract.methods.makeBid(bidAmount).send()
-
-    setShow(false)
-    setBidMade(true)
-  }
-
-  if (bidMade) {
-    const RideContract = getRide()
-    RideContract.events.BidAccepted({}, (error, event) => {
+    addListener("BidAccepted", (error, event) => {
       if (error) {
         console.log(error)
         return
       }
 
       console.log(event)
-      history(`/ongoingRide/${event.address}`,{state:{bidAmount:bidAmount}})
+      navigate(`/ongoingRide/${event.address}`, { state: { bidAmount: bidAmount } })
     })
+
+    setBidMade(true)
   }
 
   return (
     <Card style={{ flex: 1, backgroundColor: '#48a897' }} text="light" className="my-3 p-3 rounded">
       <Card.Body>
-        <Card.Text as="h3">
+        {/* <Card.Text as="h3">
           {' '}
-          Rider address: <small>{ride.returnValues._rider}</small>{' '}
-        </Card.Text>
-        <Card.Text as="h3"> Pickup: {ride.returnValues._source_name} </Card.Text>
-        <Card.Text as="h3"> Destination: {ride.returnValues._dest_name} </Card.Text>
+          Rider address: <small>{ride.address}</small>{' '}
+        </Card.Text> */}
+        <Card.Text as="h3"> Pickup: {ride.source_name} </Card.Text>
+        <Card.Text as="h3"> Destination: {ride.dest_name} </Card.Text>
         <Card.Text as="h6">
           <strong>
-            User Rating: <Rating icon="star" disabled defaultRating={5} maxRating={5} />
+            User Rating: <Rating icon="star" disabled defaultRating={ride.rating} maxRating={5} />
           </strong>
         </Card.Text>
         <Button onClick={() => setShow(true)}>Make Bid</Button>
@@ -57,10 +52,11 @@ function Ride({ ride }) {
                   fluid
                   icon="rupee"
                   iconPosition="left"
+                  disabled={bidMade}
                   onChange={(e) => setBidAmount(e.target.value)}
                   placeholder="Enter bid amount"
                 />
-                <Button type="submit" color="teal" fluid onClick={submitHandler}>
+                <Button type="submit" color="teal" fluid disabled={bidMade} onClick={submitHandler}>
                   Submit
                 </Button>
                 <Button

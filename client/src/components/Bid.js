@@ -10,10 +10,9 @@ function Bid({ driver }) {
   const submitHandler = async (e) => {
     const ride = getRide()
     const acceptedBid = await ride.methods.acceptBid(driver.walletAddress).send()
-    console.log(ride)
     console.log(acceptedBid)
 
-    navigate(`/ongoingRide/${ride.options.address}`,{state:{bidAmount:driver.bidAmount}})
+    navigate(`/ongoingRide/${ride.options.address}`, { state: { bidAmount: driver.bidAmount } })
   }
 
   return (
@@ -42,7 +41,6 @@ function Bid({ driver }) {
         </Card.Text>
       </Card.Body>
     </Card>
-    
   )
 }
 

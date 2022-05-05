@@ -7,6 +7,8 @@ let dtaxi = null
 let ride = null
 let account = null
 
+const listeners = {}
+
 export const initWeb3 = () =>
   new Promise((resolve, reject) => {
     // Wait for loading completion to avoid race conditions with web3 injection timing.
@@ -51,6 +53,13 @@ export const initDTaxiContract = async (_account) => {
     gas: 1500000,
     gasPrice: '3000000000000'
   })
+
+  dtaxi.events.allEvents({}, (error, event) => {
+    if (listeners[event.event]) {
+      listeners[event.event].forEach((listener) => listener(error, event))
+    }
+  })
+
   return dtaxi
 }
 
@@ -72,10 +81,28 @@ export const setRide = (rideContractAddress) => {
     gas: 1500000,
     gasPrice: '3000000000000'
   })
+
+  ride.events.allEvents({}, (error, event) => {
+    if (listeners[event.event]) {
+      listeners[event.event].forEach((listener) => listener(error, event))
+    }
+  })
 }
 
 export const getRide = () => {
   if (ride) return ride
 
   throw new Error('Ride is not initialized.')
+}
+
+export const addListener = (event, listener) => {
+  if (!(event in listeners)) listeners[event] = []
+
+  listeners[event].push(listener)
+}
+
+export const removeListener = (event, listener) => {
+  if (event in listeners) {
+    listeners[event] = listeners[event].filter((l) => l !== listener)
+  }
 }

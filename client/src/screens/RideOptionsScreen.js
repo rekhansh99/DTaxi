@@ -1,21 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'react-bootstrap'
-import { getDTaxiContract } from '../web3'
+import { addListener, removeListener } from '../web3'
 import Ride from '../components/Ride'
 import './centerAlign.css'
 
 function RideOptionsScreen() {
   const [rideRequests, setRideRequests] = useState({})
-  const contract = getDTaxiContract()
-  contract.events.RideRequested({}, (error, event) => {
-    if (error) {
-      console.log(error)
-      return
+
+  useEffect(() => {
+    const rideRequestedListener = (error, event) => {
+      if (error) {
+        console.log(error)
+        return
+      }
+
+      console.log(event)
+      setRideRequests((requests) => {
+        const key = Object.keys(requests).length
+        return {
+          ...requests,
+          [key]: {
+            address: event.returnValues._rider,
+            source_name: event.returnValues._source_name,
+            dest_name: event.returnValues._dest_name,
+            rating: 5
+          }
+        }
+      })
     }
 
-    let key = Object.keys(rideRequests).length
-    setRideRequests({ ...rideRequests, [key]: event })
-  })
+    addListener("RideRequested", rideRequestedListener)
+    return () => removeListener("RideRequested", rideRequestedListener)
+  }, [])
 
   console.log(rideRequests)
 
@@ -38,4 +54,5 @@ function RideOptionsScreen() {
     </>
   )
 }
+
 export default RideOptionsScreen
