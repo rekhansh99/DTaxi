@@ -82,7 +82,7 @@ contract Ride {
     mapping(address => Driver) drivers;
 
     event BidReceived(address _driver, uint256 _amount);
-    event BidAccepted(address _driver);
+    event BidAccepted(address _driver, Location source, Location dest);
     event RideStarted();
     event RideCompleted();
     event RideCancelled();
@@ -131,7 +131,7 @@ contract Ride {
         driver = drivers[_driver];
         status = RideStatus.ACCEPTED;
 
-        emit BidAccepted(_driver);
+        emit BidAccepted(_driver, source, dest);
     }
 
     function startRide() public payable {

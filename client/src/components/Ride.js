@@ -4,6 +4,23 @@ import { Card } from 'react-bootstrap'
 import { Rating, Button, Form, Segment } from 'semantic-ui-react'
 import { setRide, getRide, addListener } from '../web3'
 
+function calcDistance() {
+  var coords = Array.prototype.map.call(arguments, function (deg) {
+    return (deg / 180.0) * Math.PI
+  })
+  var lat1 = coords[0] / 3600,
+    lon1 = coords[1] / 3600,
+    lat2 = coords[2] / 3600,
+    lon2 = coords[3] / 3600
+  var R = 6372.8
+  var dLat = lat2 - lat1
+  var dLon = lon2 - lon1
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2)
+  var c = 2 * Math.asin(Math.sqrt(a))
+  return R * c * 1.852
+}
+
 function Ride({ ride }) {
   const [show, setShow] = useState(false)
   const [bidMade, setBidMade] = useState(false)
@@ -16,14 +33,27 @@ function Ride({ ride }) {
     setRide(ride.address)
     const RideContract = getRide()
     await RideContract.methods.makeBid(bidAmount).send()
-    addListener("BidAccepted", (error, event) => {
+    addListener('BidAccepted', (error, event) => {
       if (error) {
         console.log(error)
         return
       }
 
-      console.log(event)
-      navigate(`/ongoingRide/${event.address}`, { state: { bidAmount: bidAmount } })
+      const distance = calcDistance(
+        event.returnValues.source.lat,
+        event.returnValues.source.long,
+        event.returnValues.dest.lat,
+        event.returnValues.dest.long
+      )
+
+      navigate(`/ongoingRide/${event.address}`, {
+        state: {
+          bidAmount: bidAmount,
+          source: event.returnValues.source.name,
+          destination: event.returnValues.dest.name,
+          distance: distance
+        }
+      })
     })
 
     setBidMade(true)
@@ -50,7 +80,7 @@ function Ride({ ride }) {
               <Segment stacked>
                 <Form.Input
                   fluid
-                  icon="rupee"
+                  icon="ethereum"
                   iconPosition="left"
                   disabled={bidMade}
                   onChange={(e) => setBidAmount(e.target.value)}

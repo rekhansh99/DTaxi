@@ -11,9 +11,10 @@ function Loader() {
         width: "100px",
         margin: "auto",
         display: "block",
+        color: 'white'
       }}
     >
-      <span className="sr-only">Loading...</span>
+      {/* <span className="sr-only">Loading...</span> */}
     </Spinner>
   );
 }

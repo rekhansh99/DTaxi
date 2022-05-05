@@ -50,21 +50,41 @@ function BidScreen() {
       })
     }
 
-    addListener("BidReceived", bidReceivedListener)
+    addListener('BidReceived', bidReceivedListener)
 
-    return () => removeListener("BidReceived", bidReceivedListener)
+    return () => removeListener('BidReceived', bidReceivedListener)
   }, [])
 
   return (
-    <Container>
-      {Object.entries(bids).map((bid) => (
-        <Row key={bid[0]} className="test">
-          <Col md={3}>
-            <Bid driver={bid[1]} />
-          </Col>
-        </Row>
-      ))}
-    </Container>
+    <div className="bgImage">
+      {Object.keys(bids).length ? (
+        <Container>
+          <Row>
+            <Col className="banner">
+              <h1 style={{ fontSize: '5rem' }}>
+                <i className="taxi icon"></i> DTaxi
+              </h1>
+              <br />
+              <h1 style={{ fontSize: '2rem' }}>Available bids</h1>
+            </Col>
+            <Col>
+              {Object.entries(bids).map((bid) => (
+                <Row key={bid[0]} className="test">
+                  <Bid driver={bid[1]} />{' '}
+                </Row>
+              ))}
+            </Col>
+          </Row>
+        </Container>
+      ) : (
+        <>
+          <h1 className="test verticalCenter" style={{ fontSize: '3rem', color: 'white' }}>
+            {' '}
+            Oops! No bids for the requested ride yet.{' '}
+          </h1>
+        </>
+      )}
+    </div>
   )
 }
 export default BidScreen

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Grid, Segment } from 'semantic-ui-react'
 import { getDTaxiContract, setRide } from '../web3'
+import './centerAlign.css'
 
 function toSeconds(coordinate) {
   const absolute = Math.abs(coordinate)
@@ -54,10 +55,12 @@ function RiderForm() {
   }
 
   return (
-    <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
-      <Grid.Column style={{ maxWidth: 450 }}>
+    <div className='bgImage'>
+      <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
+      <Grid.Column style={{ maxWidth: 650 }}>
         <Form size="large" onSubmit={submitHandler}>
           <Segment stacked>
+          <h1 style={{fontSize: '5rem'}}><i className='taxi icon'></i> DTaxi</h1>
             <Form.Input
               fluid
               icon="location arrow"
@@ -79,6 +82,8 @@ function RiderForm() {
         </Form>
       </Grid.Column>
     </Grid>
+    </div>
+    
   )
 }
 
