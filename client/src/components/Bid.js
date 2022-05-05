@@ -7,7 +7,7 @@ import { getRide } from '../web3'
 function calcDistance() {
   var coords = Array.prototype.map.call(arguments, function(deg) { return deg/180.0 * Math.PI; });
   var lat1 = (coords[0])/3600, lon1 = (coords[1])/3600, lat2 = (coords[2])/3600, lon2 = (coords[3])/3600;
-  var R = 6372.8; // km
+  var R = 6372.8; 
   var dLat = lat2 - lat1;
   var dLon = lon2 - lon1;
   var a = Math.sin(dLat / 2) * Math.sin(dLat /2) + Math.sin(dLon / 2) * Math.sin(dLon /2) * Math.cos(lat1) * Math.cos(lat2);
@@ -48,11 +48,10 @@ function Bid({ driver }) {
       <Card.Body>
         <Card.Text as="h3"> Vehicle no: {driver.vehicle_no} </Card.Text>
         <Card.Text as="h6">
-          {/* TODO: Calculate distance */}
           <strong>Driver distance: 2 km</strong>
         </Card.Text>
         <Card.Text as="h6">
-          <strong>Fare: ₹ {driver.bidAmount}</strong>
+          <strong>Fare: {driver.bidAmount} ETH</strong>
         </Card.Text>
         <Card.Text as="h6">
           <strong>

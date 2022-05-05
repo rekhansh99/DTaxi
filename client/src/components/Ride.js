@@ -40,7 +40,6 @@ function Ride({ ride }) {
         return
       }
 
-      console.log(event)
       const distance = calcDistance(event.returnValues.source.lat, event.returnValues.source.long, event.returnValues.dest.lat, event.returnValues.dest.long)
 
       navigate(`/ongoingRide/${event.address}`,
@@ -74,7 +73,7 @@ function Ride({ ride }) {
               <Segment stacked>
                 <Form.Input
                   fluid
-                  icon="rupee"
+                  icon="ethereum"
                   iconPosition="left"
                   onChange={(e) => setBidAmount(e.target.value)}
                   placeholder="Enter bid amount"

@@ -21,7 +21,7 @@ function BidScreen() {
       console.log('Driver does not exist')
       const driver = {
         name: 'XYZ',
-        vehicle_no: 'driver.vehicle_no',
+        vehicle_no: 'DL1X2345',
         bidAmount: event.returnValues._amount,
         rating: 3,
         walletAddress: event.returnValues._driver
@@ -65,9 +65,10 @@ function BidScreen() {
               <h1 style={{fontSize: '5rem'}}>
                 <i className='taxi icon' ></i> DTaxi
               </h1>
-              <div className="d-grid gap-2">
-                  Ride Requests
-              </div>
+              <br/>
+              <h1 style={{fontSize: '2rem'}}>
+                  Available bids
+              </h1>
             </Col>
             <Col>
             {

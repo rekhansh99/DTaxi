@@ -18,8 +18,6 @@ function RideOptionsScreen() {
     setRideRequests({ ...rideRequests, [key]: event })
   })
 
-  console.log(rideRequests)
-
   return (
     <div className='bgImage'>
       { Object.keys(rideRequests).length ?
@@ -29,9 +27,10 @@ function RideOptionsScreen() {
               <h1 style={{fontSize: '5rem'}}>
                 <i className='taxi icon' ></i> DTaxi
               </h1>
-              <div className="d-grid gap-2">
+              <br/>
+              <h1 style={{fontSize: '2rem'}}>
                   Ride Requests
-              </div>
+              </h1>
             </Col>
             <Col>
             {
