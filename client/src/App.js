@@ -8,6 +8,7 @@ import RideOptions from './screens/RideOptionsScreen'
 import RideConfirmed from './screens/RideScreen'
 
 import './App.css'
+import './screens/centerAlign.css'
 import RiderForm from './screens/RiderForm'
 import DriverForm from './screens/DriverForm'
 
@@ -50,20 +51,22 @@ class App extends Component {
     }
 
     if (!this.state.account) {
-      return (
-        <div>
-          <p>Select an account: </p>
-          <select defaultValue={-1} onChange={(e) => this.setAccount(e.target.value)}>
-            <option hidden disabled key={-1} value={-1}>
-              -- select an option --
-            </option>
-            {this.state.accounts.map((account, index) => (
-              <option key={index} value={account}>
-                {account}
-              </option>
-            ))}
-          </select>
-        </div>
+      return (<div className='bgImage'>
+        <div className ='test verticalCenter'>
+        <h1 style={{color:'white',fontSize:'5rem'}}><i className='taxi icon'></i> DTaxi</h1>
+      <h1 style={{color:'white',fontSize:'2rem'}}>Select an account: </h1>
+      <select style={{padding:'5%', margin:'2%', fontWeight:'bold'}} defaultValue={-1} onChange={(e) => this.setAccount(e.target.value)}>
+        <option hidden disabled key={-1} value={-1}>
+          -- select an option --
+        </option>
+        {this.state.accounts.map((account, index) => (
+          <option style={{margin:'2%', padding:'2%'}} key={index} value={account}>
+            {account}
+          </option>
+        ))}
+      </select>
+    </div></div>
+        
       )
     }
 
