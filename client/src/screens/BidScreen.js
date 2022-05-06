@@ -3,7 +3,7 @@ import { Row, Container, Col } from 'react-bootstrap'
 import { getDoc, doc } from 'firebase/firestore/lite'
 import Bid from '../components/Bid'
 import { addListener, removeListener } from '../web3'
-import { db } from '../firebase'
+import db from '../firebase'
 import './centerAlign.css'
 
 function BidScreen() {

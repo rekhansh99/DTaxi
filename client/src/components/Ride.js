@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 import { Rating, Button, Form, Segment } from 'semantic-ui-react'
-import { setRide, getRide, addListener } from '../web3'
+import { setRide, getRide, getAccount, addListener } from '../web3'
 
 function calcDistance() {
   var coords = Array.prototype.map.call(arguments, function (deg) {
@@ -21,7 +21,7 @@ function calcDistance() {
   return R * c * 1.852
 }
 
-function Ride({ ride }) {
+function Ride({ ride, removeRequest }) {
   const [show, setShow] = useState(false)
   const [bidMade, setBidMade] = useState(false)
   const [bidAmount, setBidAmount] = useState(0)
@@ -36,6 +36,11 @@ function Ride({ ride }) {
     addListener('BidAccepted', (error, event) => {
       if (error) {
         console.log(error)
+        return
+      }
+
+      if (event.returnValues._driver !== getAccount()) {
+        removeRequest()
         return
       }
 

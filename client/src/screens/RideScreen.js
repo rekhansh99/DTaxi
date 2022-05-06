@@ -6,7 +6,7 @@ import { addListener, getRide, removeListener } from '../web3'
 import './centerAlign.css'
 import map from './map.jpg'
 
-const RideScreen = () => {
+const RideScreen = ({ isDriver }) => {
   const [showCause, setShowCause] = useState(false)
   const [showRating, setShowRating] = useState(false)
   const [reason, setReason] = useState('')
@@ -55,14 +55,18 @@ const RideScreen = () => {
 
       console.log(event)
       console.log('Ride ended')
-      const ride = getRide()
-      const data = await ride.methods.withdraw().send()
-      console.log(data)
+      if (isDriver) {
+        const ride = getRide()
+        const data = await ride.methods.withdraw().send()
+        console.log('Amount withdrawn')
+        console.log(data)
+        navigate('/')
+      }
     }
 
     addListener('RideCompleted', rideCompletedListener)
     return () => removeListener('RideCompleted', rideCompletedListener)
-  }, [])
+  }, [isDriver, navigate])
 
   const handleCancelRide = async () => {
     const ride = getRide()
@@ -139,9 +143,8 @@ const RideScreen = () => {
                 <Card.Header as="h3" style={{ backgroundColor: '#abd6d0' }}>
                   <Row>
                     <Col>
-                      <Icon name="user" /> Avinash Tripathi
+                      <Icon name="user" />
                     </Col>
-                    <Col>OTP: 1234</Col>
                   </Row>
                 </Card.Header>
                 <Card.Img variant="top" src={map} />
@@ -173,28 +176,50 @@ const RideScreen = () => {
                     </Col>
                   </Row>
                 </Card.Body>
-                <Card.Footer>
-                  <Row>
-                    <Col lg={4}>
-                      <Button style={{ marginBottom: '1%' }} color="teal" fluid size="large" onClick={handleStartRide}>
-                        {' '}
-                        Start Ride{' '}
-                      </Button>
-                    </Col>
-                    <Col lg={4}>
-                      <Button style={{ marginBottom: '1%' }} color="teal" fluid size="large" onClick={handleEndRide}>
-                        {' '}
-                        End Ride{' '}
-                      </Button>
-                    </Col>
-                    <Col lg={4}>
-                      <Button style={{ marginBottom: '1%' }} color="teal" fluid size="large" onClick={handleCancelRide}>
-                        {' '}
-                        Cancel Ride{' '}
-                      </Button>
-                    </Col>
-                  </Row>
-                </Card.Footer>
+                {!isDriver && (
+                  <Card.Footer>
+                    <Row>
+                      {!started ? (
+                        <>
+                          <Col lg={6}>
+                            <Button
+                              style={{ marginBottom: '1%' }}
+                              color="teal"
+                              fluid
+                              size="large"
+                              onClick={handleStartRide}
+                            >
+                              Start Ride
+                            </Button>
+                          </Col>
+                          <Col lg={6}>
+                            <Button
+                              style={{ marginBottom: '1%' }}
+                              color="teal"
+                              fluid
+                              size="large"
+                              onClick={handleCancelRide}
+                            >
+                              Cancel Ride
+                            </Button>
+                          </Col>
+                        </>
+                      ) : (
+                        <Col lg={12}>
+                          <Button
+                            style={{ marginBottom: '1%' }}
+                            color="teal"
+                            fluid
+                            size="large"
+                            onClick={handleEndRide}
+                          >
+                            End Ride
+                          </Button>
+                        </Col>
+                      )}
+                    </Row>
+                  </Card.Footer>
+                )}
               </Card>
             </Col>
           </Row>

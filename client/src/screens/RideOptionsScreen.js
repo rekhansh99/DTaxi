@@ -34,6 +34,14 @@ function RideOptionsScreen() {
     return () => removeListener('RideRequested', rideRequestedListener)
   }, [])
 
+  const removeRequest = (key) => {
+    setRideRequests((requests) => {
+      const newRequests = { ...requests }
+      delete newRequests[key]
+      return newRequests
+    })
+  }
+
   return (
     <div className="bgImage">
       {Object.keys(rideRequests).length ? (
@@ -49,7 +57,7 @@ function RideOptionsScreen() {
             <Col>
               {Object.entries(rideRequests).map((ride) => (
                 <Row key={ride[0]} className="test">
-                  <Ride ride={ride[1]} />{' '}
+                  <Ride ride={ride[1]} removeRequest={() => removeRequest(ride[0])} />
                 </Row>
               ))}
             </Col>

@@ -11,8 +11,11 @@ import './App.css'
 import RiderForm from './screens/RiderForm'
 import DriverForm from './screens/DriverForm'
 
+import { getDoc, doc } from 'firebase/firestore/lite'
+import db from './firebase'
+
 class App extends Component {
-  state = { web3: null, accounts: null, account: null }
+  state = { web3: null, accounts: null, account: null, isDriver: false }
 
   componentDidMount = async () => {
     try {
@@ -33,7 +36,10 @@ class App extends Component {
 
   setAccount = async (account) => {
     await initDTaxiContract(account)
-    this.setState({ account })
+
+    const driverSnap = await getDoc(doc(db, 'drivers', account))
+
+    this.setState({ account, isDriver: driverSnap.exists() })
   }
 
   render() {
@@ -68,15 +74,14 @@ class App extends Component {
     }
 
     return (
-
       <Router>
         <Routes>
-          <Route exact path="/" element={<Home />}/>
-          <Route exact path="/ride" element={<RiderForm />}/>
-          <Route exact path="/drive" element={<DriverForm />}/>
+          <Route exact path="/" element={<Home isDriver={this.state.isDriver} />} />
+          <Route exact path="/ride" element={<RiderForm />} />
+          <Route exact path="/drive" element={<DriverForm setDriver={() => this.setState({ isDriver: true })} />} />
           <Route exact path="/bids" element={<Bids />} />
           <Route exact path="/options" element={<RideOptions />} />
-          <Route exact path="/ongoingRide/:address" element={<RideConfirmed />} />
+          <Route exact path="/ongoingRide/:address" element={<RideConfirmed isDriver={this.state.isDriver} />} />
         </Routes>
       </Router>
     )
