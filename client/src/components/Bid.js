@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Card, Button } from 'react-bootstrap'
 import { Rating } from 'semantic-ui-react'
 import { useNavigate } from 'react-router-dom'
-import { getRide, addListener, removeListener } from '../web3'
+import { getRide, addListener, removeListener, getWeb3, getAccount } from '../web3'
 
 function calcDistance() {
   var coords = Array.prototype.map.call(arguments, function (deg) {
@@ -27,6 +27,7 @@ function Bid({ driver }) {
     const ride = getRide()
     const acceptedBid = await ride.methods.acceptBid(driver.walletAddress).send()
     console.log(acceptedBid)
+    getWeb3().eth.getBalance(getAccount()).then(console.log)
   }
 
   useEffect(() => {

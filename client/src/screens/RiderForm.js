@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Form, Grid, Segment } from 'semantic-ui-react'
 import Autocomplete from 'react-autocomplete'
-import { getDTaxiContract, setRide } from '../web3'
+import { getDTaxiContract, setRide, getWeb3, getAccount } from '../web3'
 import './centerAlign.css'
 
 function toSeconds(coordinate) {
@@ -23,19 +23,12 @@ function convertDMS(lat, lng) {
 }
 
 async function getCoordinates(loc) {
-  const coords = []
-  const data = await (
-    await fetch(`http://www.mapquestapi.com/geocoding/v1/address?key=G6WNiN78hofxPRgeQEs8T6IYKFZ0MDuY&location=${loc}`)
-  ).json()
-  coords[0] = data.results[0].locations[0].displayLatLng.lat
-  coords[1] = data.results[0].locations[0].displayLatLng.lng
-  console.log(coords)
-  return convertDMS(coords[0], coords[1])
+  return convertDMS(loc.lat, loc.long)
 }
 
 function RiderForm() {
-  const [pickup, setPickup] = useState('')
-  const [destination, setDestination] = useState('')
+  const [pickup, setPickup] = useState({ name: '', lat: 0, long: 0 })
+  const [destination, setDestination] = useState({ name: '', lat: 0, long: 0 })
   const [pickupSuggestions, setPickupSuggestions] = useState([])
   const [destSuggestions, setDestSuggestions] = useState([])
   const navigate = useNavigate()
@@ -48,39 +41,45 @@ function RiderForm() {
 
     console.log(source)
     console.log(dest)
+    console.log(pickup.name);
+    console.log(destination.name);
+
     const contract = getDTaxiContract()
     const receipt = await contract.methods
-      .requestRide(pickup, source[0], source[1], destination, dest[0], dest[1])
+      .requestRide(pickup.name.substring(0, 31), source[0], source[1], destination.name.substring(0, 31), dest[0], dest[1])
       .send()
+    getWeb3().eth.getBalance(getAccount()).then(console.log)
     console.log(receipt)
     setRide(receipt.events.RideRequested.returnValues._rider)
     navigate('/bids')
   }
 
   useEffect(() => {
-    const fetchData = async (setSuggestions) => {
+    const fetchData = async (query, setSuggestions) => {
       const data = await (
         await fetch(
-          `https://api.locationiq.com/v1/autocomplete.php?key=pk.f2d07b3a42a97028ed2f39cc7a20eaf2&q=${pickup}`
+          `https://api.locationiq.com/v1/autocomplete.php?key=pk.f2d07b3a42a97028ed2f39cc7a20eaf2&q=${query}`
         )
       ).json()
 
       console.log(data)
+      if (data.error)
+        return
 
       const places = {}
       data.forEach((place) => {
         places[place.place_id] = {
           name: place.display_name,
           lat: place.lat,
-          long: place.long
+          long: place.lon
         }
       })
 
       setSuggestions(Object.values(places))
     }
 
-    if (pickup.length >= 3) fetchData(setPickupSuggestions)
-    if (destination.length >= 3) fetchData(setDestSuggestions)
+    if (pickup.name.length >= 3) fetchData(pickup.name, setPickupSuggestions)
+    if (destination.name.length >= 3) fetchData(destination.name, setDestSuggestions)
   }, [pickup, destination])
 
   return (
@@ -99,7 +98,7 @@ function RiderForm() {
                   wrapperStyle={{ width: '100%', zIndex: 10 }}
                   menuStyle={{
                     borderRadius: '3px',
-                    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 2px 12pridex rgba(0, 0, 0, 0.1)',
                     background: '#fff',
                     padding: '2px 0',
                     fontSize: '90%',
@@ -114,9 +113,9 @@ function RiderForm() {
                       <span style={{ fontWeight: isHighlighted ? 'bold' : 'normal' }}>{item.name}</span>
                     </div>
                   )}
-                  value={pickup}
-                  onChange={(e) => setPickup(e.target.value)}
-                  onSelect={(val) => setPickup(val)}
+                  value={pickup.name}
+                  onChange={(e) => setPickup({ name: e.target.value, lat: 0, long: 0 })}
+                  onSelect={(val) => setPickup(pickupSuggestions.filter((x) => x.name === val)[0])}
                 />
               </div>
               <div className="field">
@@ -142,9 +141,9 @@ function RiderForm() {
                       <span style={{ fontWeight: isHighlighted ? 'bold' : 'normal' }}>{item.name}</span>
                     </div>
                   )}
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  onSelect={(val) => setDestination(val)}
+                  value={destination.name}
+                  onChange={(e) => setDestination({ name: e.target.value, lat: 0, long: 0 })}
+                  onSelect={(val) => setDestination(destSuggestions.filter((x) => x.name === val)[0])}
                 />
               </div>
               <Button type="submit" color="teal" fluid size="large">

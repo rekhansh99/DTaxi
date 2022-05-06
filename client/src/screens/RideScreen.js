@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Container, Row, Col, Card } from 'react-bootstrap'
 import { Button, Icon, Modal, Header, Form } from 'semantic-ui-react'
-import { addListener, getRide, removeListener } from '../web3'
+import { addListener, getRide, removeListener, getWeb3, getAccount } from '../web3'
 import './centerAlign.css'
 import map from './map.jpg'
 
@@ -20,6 +20,7 @@ const RideScreen = ({ isDriver }) => {
     const data = await ride.methods.startRide().send({ value: loc.state.bidAmount })
     console.log('start request')
     console.log(data)
+    getWeb3().eth.getBalance(getAccount()).then(console.log)
   }
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const RideScreen = ({ isDriver }) => {
     const data = await ride.methods.endRide().send()
     console.log('end request')
     console.log(data)
+    getWeb3().eth.getBalance(getAccount()).then(console.log)
     setShowRating(true)
   }
 
@@ -60,6 +62,7 @@ const RideScreen = ({ isDriver }) => {
         const data = await ride.methods.withdraw().send()
         console.log('Amount withdrawn')
         console.log(data)
+        getWeb3().eth.getBalance(getAccount()).then(console.log)
         navigate('/')
       }
     }
@@ -73,6 +76,7 @@ const RideScreen = ({ isDriver }) => {
     const data = await ride.methods.cancelRide().send()
     console.log('cancel request')
     console.log(data)
+    getWeb3().eth.getBalance(getAccount()).then(console.log)
     setShowCause(true)
   }
 
