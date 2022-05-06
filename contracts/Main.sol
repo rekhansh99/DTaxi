@@ -105,7 +105,7 @@ contract Ride {
     }
 
     function makeBid(uint256 _amount) public {
-        // require(msg.sender != rider, "Rider can't be driver");
+        require(msg.sender != rider, "Rider can't be driver");
         require(_amount > 0, "Bid amount must be greater than zero");
         require(
             status == RideStatus.REQUESTED,
@@ -160,12 +160,12 @@ contract Ride {
         emit RideCompleted();
     }
 
-    function withdraw() public payable {
-    //    require(msg.sender == driver.walletAddress);
-        // require(
-        //     status == RideStatus.COMPLETED,
-        //     "Ride must be completed before withdrawing"
-        // );
+    function withdraw() public {
+        require(msg.sender == driver.walletAddress, "Driver needs to withdraw");
+        require(
+            status == RideStatus.COMPLETED,
+            "Ride must be completed before withdrawing"
+        );
 
         payable(msg.sender).transfer(driver.bidAmount);
     }
